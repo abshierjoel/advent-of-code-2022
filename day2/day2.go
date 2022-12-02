@@ -15,58 +15,96 @@ type Turn struct {
 
 func main() {
 	lines := readLines()
-	turns := linesToTurns(lines)
 
 	// Part 1
-	partOneScore := partOne(turns)
+	partOneTurns := linesToTurns(lines, partOneHand)
+	partOneScore := scoreGame(partOneTurns)
 	fmt.Printf("You scored %d in Part 1\n", partOneScore)
 
 	// Part 2
-	partTwoScore := partTwo(turns)
+	partTwoTurns := linesToTurns(lines, partTwoHand)
+	partTwoScore := scoreGame(partTwoTurns)
 	fmt.Printf("You scored %d in Part 2\n", partTwoScore)
+
+	fmt.Println("Expected Output:")
+	fmt.Println("You scored 14827 in Part 1")
+	fmt.Println("You scored 13889 in Part 2")
 }
 
-func partTwo(turns []Turn) int {
-	newTurns := updateTurns(turns)
-
+func scoreGame(turns []Turn) int {
 	var totalScore int
-	for i := 0; i < len(newTurns); i++ {
-		totalScore += scoreYourHand(newTurns[i].YourHand)
-		totalScore += getPartTwoResult(newTurns[i])
+	for i := 0; i < len(turns); i++ {
+		totalScore += scoreYourHand(turns[i].YourHand)
+		totalScore += getResults(turns[i])
 	}
 	return totalScore
 }
 
-func updateTurns(turns []Turn) []Turn {
-	var newTurns []Turn
-	for i := 0; i < len(turns); i++ {
-		newTurns = append(newTurns, updateTurn(turns[i]))
+func getResults(turn Turn) int {
+	if turn.YourHand == turn.TheirHand {
+		return 3
+	} else if turn.YourHand == "rock" && turn.TheirHand == "scissors" {
+		return 6
+	} else if turn.YourHand == "paper" && turn.TheirHand == "rock" {
+		return 6
+	} else if turn.YourHand == "scissors" && turn.TheirHand == "paper" {
+		return 6
+	} else {
+		return 0
 	}
-
-	return newTurns
 }
 
-func updateTurn(turn Turn) Turn {
-	newTurn := turn
-
-	if turn.YourHand == "rock" {
-		newTurn.YourHand = losingMove(turn.TheirHand)
-	} else if turn.YourHand == "paper" {
-		newTurn.YourHand = turn.TheirHand
-	} else if turn.YourHand == "scissors" {
-		newTurn.YourHand = winningMove(turn.TheirHand)
+func linesToTurns(lines []string, handFunc func(string, string) string) []Turn {
+	var turns []Turn
+	for i := 0; i < len(lines); i++ {
+		currentTurn := toTurn(lines[i], handFunc)
+		turns = append(turns, currentTurn)
 	}
+	return turns
+}
 
-	return newTurn
+func toTurn(move string, handFunc func(string, string) string) Turn {
+	hands := strings.Split(move, " ")
+
+	return Turn{
+		YourHand:  handFunc(hands[0], hands[1]),
+		TheirHand: toTheirHand(hands[0]),
+	}
+}
+
+func partOneHand(their_hand string, your_hand string) string {
+	switch your_hand {
+	case "X":
+		return "rock"
+	case "Y":
+		return "paper"
+	case "Z":
+		return "scissors"
+	default:
+		return ""
+	}
+}
+
+func partTwoHand(their_hand string, your_hand string) string {
+	switch your_hand {
+	case "X":
+		return losingMove(their_hand)
+	case "Y":
+		return toTheirHand(their_hand)
+	case "Z":
+		return winningMove(their_hand)
+	default:
+		return ""
+	}
 }
 
 func losingMove(hand string) string {
 	switch hand {
-	case "rock":
+	case "A":
 		return "scissors"
-	case "paper":
+	case "B":
 		return "rock"
-	case "scissors":
+	case "C":
 		return "paper"
 	default:
 		return ""
@@ -75,80 +113,19 @@ func losingMove(hand string) string {
 
 func winningMove(hand string) string {
 	switch hand {
-	case "rock":
+	case "A":
 		return "paper"
-	case "paper":
+	case "B":
 		return "scissors"
-	case "scissors":
+	case "C":
 		return "rock"
 	default:
 		return ""
 	}
 }
 
-func getPartTwoResult(turn Turn) int {
-	if turn.YourHand == turn.TheirHand {
-		return 3
-	} else if turn.YourHand == "rock" && turn.TheirHand == "scissors" {
-		return 6
-	} else if turn.YourHand == "paper" && turn.TheirHand == "rock" {
-		return 6
-	} else if turn.YourHand == "scissors" && turn.TheirHand == "paper" {
-		return 6
-	} else {
-		return 0
-	}
-}
-
-func partOne(turns []Turn) int {
-	var totalScore int
-	for i := 0; i < len(turns); i++ {
-		totalScore += scoreYourHand(turns[i].YourHand)
-		totalScore += getPartOneResult(turns[i])
-	}
-	return totalScore
-}
-
-func getPartOneResult(turn Turn) int {
-	if turn.YourHand == turn.TheirHand {
-		return 3
-	} else if turn.YourHand == "rock" && turn.TheirHand == "scissors" {
-		return 6
-	} else if turn.YourHand == "paper" && turn.TheirHand == "rock" {
-		return 6
-	} else if turn.YourHand == "scissors" && turn.TheirHand == "paper" {
-		return 6
-	} else {
-		return 0
-	}
-}
-
-func linesToTurns(lines []string) []Turn {
-	var turns []Turn
-	for i := 0; i < len(lines); i++ {
-		currentTurn := toTurn(lines[i])
-		turns = append(turns, currentTurn)
-	}
-	return turns
-}
-
-func toTurn(move string) Turn {
-	hands := strings.Split(move, " ")
-
-	return Turn{
-		YourHand:  toHand(hands[1]),
-		TheirHand: toHand(hands[0]),
-	}
-}
-
-func toHand(hand string) string {
+func toTheirHand(hand string) string {
 	switch hand {
-	case "X":
-		return "rock"
-	case "Y":
-		return "paper"
-	case "Z":
-		return "scissors"
 	case "A":
 		return "rock"
 	case "B":
@@ -158,7 +135,6 @@ func toHand(hand string) string {
 	default:
 		return ""
 	}
-
 }
 
 func scoreYourHand(hand string) int {
