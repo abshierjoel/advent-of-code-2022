@@ -26,7 +26,6 @@ func main() {
 	// Part 2
 	topThreeCaloriesSummed := sumElvesCarrying(elves, 3)
 	fmt.Printf("Part #2: %d\n", topThreeCaloriesSummed)
-
 }
 
 func getElfCaloriesCarryingMost(elves []Elf) int {
