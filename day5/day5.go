@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
+
+	"github.com/abshierjoel/advent-of-code-2022/utils"
 )
 
 const filename = "stacks.txt"
@@ -16,21 +18,25 @@ type Instruction struct {
 }
 
 func main() {
-	// file := readFile()
-	file := readSample()
+	file := readFile()\
 	raw_stacks, raw_instructions := parseParts(file)
-
-	fmt.Printf("-- Stacks -- \n%s\n\n", raw_stacks)
-	fmt.Printf("-- Instructions -- \n%s\n\n", raw_instructions)
 
 	stacks := buildStacks(raw_stacks)
 	instructions := buildInstructions(raw_instructions)
-	reordered_stacks := executeInstructions(instructions, stacks)
 
 	// Part 1
+	part1_stacks := utils.CopyMap(stacks)
+	reordered_stacks := executeCrateMover9000(instructions, part1_stacks)
 	stack_tops := getTopOfStacks(reordered_stacks)
-
+	fmt.Println("\nPart 1 Stack Tops")
 	fmt.Println(stack_tops)
+
+	// Part 2
+	part2_stacks := utils.CopyMap(stacks)
+	reordered_stacks_two := executeCrateMover9001(instructions, part2_stacks)
+	stack_tops_two := getTopOfStacks(reordered_stacks_two)
+	fmt.Println("\nPart 2 Stack Tops")
+	fmt.Println(stack_tops_two)
 }
 
 func getTopOfStacks(stacks map[int][]string) string {
@@ -42,7 +48,21 @@ func getTopOfStacks(stacks map[int][]string) string {
 	return tops
 }
 
-func executeInstructions(instructions []Instruction, stacks map[int][]string) map[int][]string {
+func executeCrateMover9001(instructions []Instruction, stacks map[int][]string) map[int][]string {
+	for _, inst := range instructions {
+		count := inst.Count
+		from := inst.From
+		to := inst.To
+
+		val := stacks[from][len(stacks[from])-count : len(stacks[from])]
+		stacks[to] = append(stacks[to], val...)
+		stacks[from] = pop_n(stacks[from], count)
+	}
+
+	return stacks
+}
+
+func executeCrateMover9000(instructions []Instruction, stacks map[int][]string) map[int][]string {
 	for _, inst := range instructions {
 		from := inst.From
 		to := inst.To
@@ -96,6 +116,10 @@ func buildStacks(raw_stacks string) map[int][]string {
 
 func pop(stack []string) ([]string, string) {
 	return stack[:len(stack)-1], stack[len(stack)-1]
+}
+
+func pop_n(stack []string, count int) []string {
+	return stack[:len(stack)-count]
 }
 
 func push(stack []string, crate string) []string {
