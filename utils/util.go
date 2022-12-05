@@ -10,3 +10,14 @@ func ReadLines(filename string) []string {
 	file_string := string(file)
 	return strings.Split(file_string, "\n")
 }
+
+func CopyMap(original map[int][]string) map[int][]string {
+	newMap := map[int][]string{}
+	for i, row := range original {
+		var newRow []string
+		newRow = append(newRow, row...)
+
+		newMap[i] = newRow
+	}
+	return newMap
+}
