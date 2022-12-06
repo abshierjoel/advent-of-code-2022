@@ -18,7 +18,7 @@ type Instruction struct {
 }
 
 func main() {
-	file := readFile()\
+	file := readFile()
 	raw_stacks, raw_instructions := parseParts(file)
 
 	stacks := buildStacks(raw_stacks)
