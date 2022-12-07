@@ -42,10 +42,10 @@ func findPacketStart(buffer string, distinctChars int) int {
 }
 
 func isUniqueList(list []string) bool {
-	distinct := make(map[string]bool)
+	distinct := make(map[string]struct{}, len(list))
 
 	for _, elem := range list {
-		distinct[elem] = true
+		distinct[elem] = struct{}{}
 	}
 
 	return len(distinct) == len(list)
