@@ -52,8 +52,8 @@ func linesToRucksacks(lines []string) []Rucksack {
 		midpoint := length / 2
 		rucksack := Rucksack{
 			Everything:     line,
-			CompartmentOne: line[0:midpoint],
-			CompartmentTwo: line[midpoint:length],
+			CompartmentOne: line[:midpoint],
+			CompartmentTwo: line[midpoint:],
 		}
 		rucksacks = append(rucksacks, rucksack)
 	}
