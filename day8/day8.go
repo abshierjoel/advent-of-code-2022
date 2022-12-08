@@ -16,6 +16,51 @@ func main() {
 	// Part 1
 	visibleTrees := getVisibleTrees(patch)
 	fmt.Printf("Visible Trees %d\n", visibleTrees)
+
+	// Part 2
+	highestScenicScore := getHighestScenicScore(patch)
+	fmt.Printf("highestScenicSore %d\n", highestScenicScore)
+}
+
+func getHighestScenicScore(patch [][]int) int {
+	highestScore := 0
+	rows := len(patch)
+	cols := len(patch[0])
+
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			height := patch[i][j]
+			fromLeft, fromRite, fromTop, fromBot := getSurroundings(patch, i, j)
+			fromLeft = reverse(fromLeft)
+			fromTop = reverse(fromTop)
+
+			score := getScenicScores(height, fromLeft, fromRite, fromTop, fromBot)
+
+			if score > highestScore {
+				highestScore = score
+			}
+		}
+	}
+
+	return highestScore
+}
+
+func getScenicScores(height int, fromLeft []int, fromRite []int, fromTop []int, fromBot []int) int {
+	return getScenicScore(fromLeft, height) * getScenicScore(fromRite, height) * getScenicScore(fromTop, height) * getScenicScore(fromBot, height)
+}
+
+func getScenicScore(trees []int, height int) int {
+	var score int
+	for _, tree := range trees {
+		if tree < height {
+			score++
+			continue
+		}
+		score++
+		break
+	}
+
+	return score
 }
 
 func getVisibleTrees(patch [][]int) int {
@@ -37,6 +82,14 @@ func getVisibleTrees(patch [][]int) int {
 	}
 
 	return visibleCount
+}
+
+func reverse(list []int) []int {
+	revList := make([]int, len(list))
+	for i, j := 0, len(list)-1; j >= 0; i, j = i+1, j-1 {
+		revList[i] = list[j]
+	}
+	return revList
 }
 
 func getColumn(patch [][]int, col int) []int {
