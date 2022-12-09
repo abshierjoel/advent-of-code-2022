@@ -18,11 +18,20 @@ type Pos struct {
 func main() {
 	lines := utils.ReadLines(filename)
 
-	seen := map[Pos]struct{}{}
-	head := Pos{x: 0, y: 0}
-	tail := Pos{x: 0, y: 0}
+	// Part 1
+	tailPositionsA := knottyBoy(lines, 2)
+	fmt.Printf("The tail visited %d positions with a length of 2.\n", tailPositionsA)
 
-	pos := Pos{x: tail.x, y: tail.y}
+	// Part 2
+	tailPositionsB := knottyBoy(lines, 10)
+	fmt.Printf("The tail visited %d positions with a length of 10.\n", tailPositionsB)
+}
+
+func knottyBoy(lines []string, ropeLength int) int {
+	seen := map[Pos]struct{}{}
+	rope := make([]Pos, ropeLength)
+
+	pos := Pos{x: rope[0].x, y: rope[0].y}
 	seen[pos] = struct{}{}
 
 	for _, line := range lines {
@@ -31,20 +40,21 @@ func main() {
 		distance, _ := strconv.Atoi(move[1])
 
 		for i := 0; i < distance; i++ {
-			head = doMove(head, direction)
-			tail = pullTail(head, tail)
+			rope[0] = doMove(rope[0], direction)
 
-			pos := Pos{x: tail.x, y: tail.y}
+			for j := 1; j < len(rope); j++ {
+				rope[j] = pullTail(rope[j-1], rope[j])
+			}
+
+			pos := Pos{x: rope[len(rope)-1].x, y: rope[len(rope)-1].y}
 			seen[pos] = struct{}{}
 		}
-
 	}
 
-	fmt.Println(len(seen))
+	return len(seen)
 }
 
 func pullTail(head Pos, tail Pos) Pos {
-
 	if max(abs(head.x-tail.x), abs(head.y-tail.y)) > 1 {
 		if head.x > tail.x {
 			tail.x += 1
