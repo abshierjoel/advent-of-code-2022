@@ -31,6 +31,6 @@ const test = `package main
 
 import "testing"
 
-TestFunc(t *testing.T)  {
+func TestFunc(t *testing.T)  {
 
 }`
