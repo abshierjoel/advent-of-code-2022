@@ -72,5 +72,3 @@ func (cpu *CPU) cycle(add int) {
 }
 
 func newCpu() CPU { return CPU{X: 1, Cycles: 0} }
-
-// RUAKHBEK
