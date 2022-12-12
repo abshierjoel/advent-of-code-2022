@@ -10,9 +10,26 @@ import (
 func TestMonkeyBusiness(t *testing.T) {
 	lines := strings.Split(sample(), "\n")
 	monkeys := parseMonkeys(lines)
-	result := findMonkeyBusiness(monkeys, 20)
+	result := findMonkeyBusiness(monkeys, 20, partAWorry)
 
 	assert.Equal(t, 10605, result)
+}
+
+func TestBigMonkeyBusiness(t *testing.T) {
+	lines := strings.Split(sample(), "\n")
+	monkeys := parseMonkeys(lines)
+	lcm := lcm(monkeys)
+
+	result := findMonkeyBusiness(monkeys, 10000, partBWorry(lcm))
+	assert.Equal(t, 2713310158, result)
+}
+
+func TestLCM(t *testing.T) {
+	lines := strings.Split(sample(), "\n")
+	monkeys := parseMonkeys(lines)
+	lcm := lcm(monkeys)
+
+	assert.Equal(t, 96577, lcm)
 }
 
 func TestParseMonkeys(t *testing.T) {
