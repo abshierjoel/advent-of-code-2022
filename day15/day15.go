@@ -19,15 +19,40 @@ type Pair struct {
 func main() {
 	lines := utils.ReadLines("sensors.txt")
 	row := 2000000
+	maxRow := 4000000
 
 	pairs := parseSensorBeaconPairs(lines)
 
 	// Part 1
-	positionsWithoutBeacons := countPositionsWithouBeacon(pairs, row)
+	positionsWithoutBeacons, sensors := countPositionsWithouBeacon(pairs, row)
 	fmt.Println(positionsWithoutBeacons)
+
+	// Part 2
+	tuningFreq := findTuningFreq(sensors, maxRow)
+	fmt.Println(tuningFreq)
 }
 
-func countPositionsWithouBeacon(pairs []Pair, row int) int {
+func findTuningFreq(sensors map[Point]int, maxRow int) int {
+	for y := 0; y <= maxRow; y++ {
+	loop:
+		for x := 0; x <= maxRow; x++ {
+			for s, diameter := range sensors {
+				if abs(s.X-x)+abs(s.Y-y) <= diameter {
+					x += diameter - abs(s.Y-y) + s.X - x
+					continue loop
+				}
+			}
+
+			fmt.Println(x)
+			fmt.Println(y)
+			return x*4000000 + y
+		}
+	}
+
+	return 0
+}
+
+func countPositionsWithouBeacon(pairs []Pair, row int) (int, map[Point]int) {
 	sensors := map[Point]int{}
 	matches := map[int]struct{}{}
 	for _, pair := range pairs {
@@ -44,7 +69,7 @@ func countPositionsWithouBeacon(pairs []Pair, row int) int {
 		}
 	}
 
-	return len(matches)
+	return len(matches), sensors
 }
 
 func parseSensorBeaconPairs(lines []string) []Pair {
@@ -66,23 +91,4 @@ func abs(value int) int {
 		return value
 	}
 	return value * (-1)
-}
-
-func sample() []string {
-	return []string{
-		"Sensor at x=2, y=18: closest beacon is at x=-2, y=15",
-		"Sensor at x=9, y=16: closest beacon is at x=10, y=16",
-		"Sensor at x=13, y=2: closest beacon is at x=15, y=3",
-		"Sensor at x=12, y=14: closest beacon is at x=10, y=16",
-		"Sensor at x=10, y=20: closest beacon is at x=10, y=16",
-		"Sensor at x=14, y=17: closest beacon is at x=10, y=16",
-		"Sensor at x=8, y=7: closest beacon is at x=2, y=10",
-		"Sensor at x=2, y=0: closest beacon is at x=2, y=10",
-		"Sensor at x=0, y=11: closest beacon is at x=2, y=10",
-		"Sensor at x=20, y=14: closest beacon is at x=25, y=17",
-		"Sensor at x=17, y=20: closest beacon is at x=21, y=22",
-		"Sensor at x=16, y=7: closest beacon is at x=15, y=3",
-		"Sensor at x=14, y=3: closest beacon is at x=15, y=3",
-		"Sensor at x=20, y=1: closest beacon is at x=15, y=3",
-	}
 }
