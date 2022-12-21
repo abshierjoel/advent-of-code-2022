@@ -1,6 +1,6 @@
 module github.com/abshierjoel/advent-of-code-2022
 
-go 1.17
+go 1.19
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
